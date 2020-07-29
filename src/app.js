@@ -39,9 +39,16 @@ app
 	})
 	.catch(next)
    })
-  .post((req,res,next) => {
+  .post(jsonParser, (req,res,next) => {
 	const {title} = req.body
 	const newTodo = {title}
+      for (const [key, value] of Object.entries(newTodo)) {
+        if (value == null) {
+          return res.status(400).json({
+            error: { message: `Missing '${key}' in request body` }
+          })
+        }
+      }
 	TodoService.insertTodo(req.app.get('db'),newTodo)
         .then(addedTodo => {
           res
